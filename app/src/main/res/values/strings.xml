@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">PopularMoviesV1</string>
+    <string name="action_settings_title">Settings</string>
+    <string name="label_settings_activity">Settings</string>
+    <string name="label_main_activity">MovieAppV1</string>
+    <string name="pref_movie_default">Popularity</string>
+    <string name="pref_movie_dialog_title">Movies Sort Order</string>
+    <string name="pref_movie_key">sortOrder</string>
+    <string name="pref_movie_title">Sort Order</string>
+    <string name="label_detail_activity">Movie Detail</string>
+</resources>

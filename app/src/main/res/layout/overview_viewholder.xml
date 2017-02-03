@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="14dp"
+    tools:context=".DetailActivity">
+
+    <!-- Overview category -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Name Label -->
+            <TextView
+                style="@style/CategoryStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Movie Name"/>
+
+            <!-- Name Label -->
+            <TextView
+                style="@style/CategoryStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Movie Poster"/>
+
+        </LinearLayout>
+
+
+        <!-- Input fields -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="vertical">
+
+            <!-- Movie Title field -->
+            <TextView
+                android:id="@+id/movie_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="20sp"
+                tools:text="Intersteller"/>
+
+            <!-- Movie Poster field -->
+            <ImageView
+                android:id="@+id/movie_poster"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                tools:src="@drawable/test_image"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Movie Overview category -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Quantity Label -->
+            <TextView
+                android:id="@+id/textView2"
+                style="@style/CategoryStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Release Date"/>
+
+            <!-- Sold Label -->
+            <TextView
+                android:id="@+id/text_amount_sold"
+                style="@style/CategoryStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vote Average"/>
+
+        </LinearLayout>
+
+
+        <!-- Input fields -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="vertical">
+
+            <!-- Release Date field -->
+            <TextView
+                android:id="@+id/movie_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="18sp"
+                tools:text="January 1st, 2016"/>
+
+            <!-- Vote Average field -->
+            <TextView
+                android:id="@+id/movie_vote_average"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="18sp"
+                tools:text="8.4"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Plot Synopsis category -->
+    <LinearLayout
+        android:id="@+id/container_gender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Plot synopsis Label -->
+        <TextView
+            android:id="@+id/textView"
+            style="@style/CategoryStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Plot Synopsis"/>
+
+        <!-- Input field -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
+            <!-- Plot Synopsis field -->
+            <TextView
+                android:id="@+id/movie_plot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="16sp"
+                tools:text="Something cool happens"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="#000000"/>
+
+    <!-- Trailers Label -->
+    <TextView
+        style="@style/CategoryStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Trailers:"
+        android:textSize="22sp"/>
+
+</LinearLayout>
