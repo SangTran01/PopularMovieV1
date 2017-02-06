@@ -1,10 +1,13 @@
 package com.example.sangtran.popularmoviesv1;
 
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -17,9 +20,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.example.sangtran.popularmoviesv1.data.MovieContract;
+import com.example.sangtran.popularmoviesv1.data.MovieContract.MovieEntry;
+import com.example.sangtran.popularmoviesv1.data.MovieDbHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.os.Build.VERSION_CODES.M;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,12 +42,13 @@ public class MainActivity extends AppCompatActivity {
     private static final int MOVIE_LOADER_ID = 1;
 
     private MovieAdapter mMovieAdapter;
+    private ProgressBar mloadingSpinner;
+    private TextView mEmptyTextView;
 
     private final static String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/";
-    private final static String POPULAR = "popular";
-    private final static String TOP_RATED = "top_rated";
-    //TODO remove my API KEY
-    private final static String API_KEY = "093a106eeee012b0db5cc9b16e64950f";
+
+    //TODO add API KEY here
+    private final static String API_KEY = "API KEY HERE";
 
     private final static String PARCE_KEY = "key";
 
@@ -45,13 +57,12 @@ public class MainActivity extends AppCompatActivity {
             = new LoaderManager.LoaderCallbacks<List<Movie>>() {
         @Override
         public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
-            Log.e(LOG_TAG, "MOVIE onCreateLoader STARTED");
             Uri baseUri = Uri.parse(MOVIE_BASE_URL);
             Uri.Builder uriBuilder = baseUri.buildUpon();
 
             //Use SharedPrefs here
             //get sortOrder pref and join to uri path
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             String sortOrder = prefs.getString(getString(R.string.pref_movie_key),
                     getString(R.string.pref_movie_default));
 
@@ -65,7 +76,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
-            Log.d(LOG_TAG, "ON LOAD FINISHED STARTED");
+            mloadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
+            mloadingSpinner.setVisibility(View.GONE);
+
+            mEmptyTextView.setText(R.string.empty_no_movies_found);
             // Clear the adapter of previous movie data
             mMovieAdapter.clear();
             // If there is a valid list of {@link Movie}s, then add them to the adapter's
@@ -77,11 +91,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onLoaderReset(Loader<List<Movie>> loader) {
-            Log.d(LOG_TAG, "ON LOAD RESET STARTED");
             // Clear the adapter of previous movie data
             mMovieAdapter.clear();
         }
     };
+
     //helper method to restart Loader
     private void restartLoader() {
         //Get a reference to the LoaderManager, in order to interact with loaders.
@@ -105,6 +119,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Find a reference to the {@link ListView} in the layout
         final GridView gridView = (GridView) findViewById(R.id.list);
+
+        //setting up empty view text
+        mEmptyTextView = (TextView) findViewById(R.id.empty_title_text);
+        gridView.setEmptyView(mEmptyTextView);
 
         // Create a new adapter that takes an empty list of earthquakes as input
         mMovieAdapter = new MovieAdapter(this, new ArrayList<Movie>());
@@ -143,6 +161,11 @@ public class MainActivity extends AppCompatActivity {
             // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
             // because this activity implements the LoaderCallbacks interface).
             loaderManager.initLoader(MOVIE_LOADER_ID, null, dataMovieLoaderListener);
+        } else {
+            // display error
+            mloadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
+            mloadingSpinner.setVisibility(View.GONE);
+            mEmptyTextView.setText(R.string.empty_no_internet_connection);
         }
     }
 

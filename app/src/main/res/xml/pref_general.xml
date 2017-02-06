@@ -7,4 +7,9 @@
         android:entryValues="@array/listValues"
         android:key="@string/pref_movie_key"
         android:title="@string/pref_movie_title"/>
+
+    <CheckBoxPreference
+        android:defaultValue="@string/pref_favorite_default"
+        android:key="@string/pref_favorite_key"
+        android:title="@string/pref_favorite_title"/>
 </PreferenceScreen>

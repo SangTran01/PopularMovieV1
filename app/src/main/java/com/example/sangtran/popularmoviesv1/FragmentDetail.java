@@ -1,14 +1,14 @@
 package com.example.sangtran.popularmoviesv1;
 
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.Loader;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -29,11 +29,14 @@ public class FragmentDetail extends Fragment {
 
     private RecyclerViewAdapter mRecyclerViewAdapter;
 
+    private LoaderManager mLoaderManager;
     private static final int TRAILER_LOADER_ID = 2;
     private static final int REVIEW_LOADER_ID = 3;
 
     private final static String PARCE_KEY = "key";
-    private final static String API_KEY = "093a106eeee012b0db5cc9b16e64950f";
+
+    //TODO add api key here
+    private final static String API_KEY = "API KEY HERE";
 
 
     ArrayList<Object> mItems;
@@ -48,7 +51,7 @@ public class FragmentDetail extends Fragment {
 
         @Override
         public Loader<List<Trailer>> onCreateLoader(int id, Bundle args) {
-            Log.e(LOG_TAG, "TRAILER onCreateLoader STARTED");
+            Log.d(LOG_TAG, "TRAILER onCreateLoader STARTED");
             Uri baseUri = Uri.parse(BASE_URL);
             Uri.Builder uriBuilder = baseUri.buildUpon();
             uriBuilder.appendPath(mMovie.getId());
@@ -71,11 +74,10 @@ public class FragmentDetail extends Fragment {
                 //put list<Trailer> in ArrayList<Object>
                 mItems.addAll(data);
                 mRecyclerViewAdapter.notifyDataSetChanged();
+                //start review loader after Trailer
+                mLoaderManager.initLoader(REVIEW_LOADER_ID, null, dataReviewLoaderListener);
             }
-
-            for (int i = 0; i < mItems.size(); i++) {
-                Log.e(LOG_TAG, "items are " + mItems.get(i));
-            }
+            Log.d(LOG_TAG, "mItems size " + mItems);
         }
 
         @Override
@@ -86,13 +88,12 @@ public class FragmentDetail extends Fragment {
         }
     };
 
-    //Review LoaderCallback
     private LoaderManager.LoaderCallbacks<List<Review>> dataReviewLoaderListener
             = new LoaderManager.LoaderCallbacks<List<Review>>() {
 
         @Override
         public Loader<List<Review>> onCreateLoader(int id, Bundle args) {
-            Log.e(LOG_TAG, "REVIEW onCreateLoader STARTED");
+            Log.d(LOG_TAG, "REVIEW onCreateLoader STARTED");
             Uri baseUri = Uri.parse(BASE_URL);
             Uri.Builder uriBuilder = baseUri.buildUpon();
             uriBuilder.appendPath(mMovie.getId());
@@ -108,13 +109,15 @@ public class FragmentDetail extends Fragment {
         public void onLoadFinished(Loader<List<Review>> loader, List<Review> data) {
             Log.d(LOG_TAG, "REVIEW ON LOAD FINISHED STARTED");
             // Clear the adapter of previous movie data
-            //mReviewAdapter.clear();
+            //mRecyclerViewAdapter.clearAdapter();
             // If there is a valid list of {@link Movie}s, then add them to the adapter's
             // data set. This will trigger the ListView to update.
             if (data != null && !data.isEmpty()) {
                 mItems.addAll(data);
                 mRecyclerViewAdapter.notifyDataSetChanged();
             }
+
+            Log.d(LOG_TAG, "Array size: " + mItems.size());
         }
 
         @Override
@@ -126,48 +129,9 @@ public class FragmentDetail extends Fragment {
     };
 
     @Override
-    public void onStart() {
-        Log.e(LOG_TAG, "Fragement Detail on start started");
-        super.onStart();
-        restartLoader();
-    }
-
-    //helper method to restart Loader
-    private void restartLoader() {
-        //Get a reference to the LoaderManager, in order to interact with loaders.
-        LoaderManager loaderManager = getActivity().getLoaderManager();
-        loaderManager.restartLoader(TRAILER_LOADER_ID, null, dataTrailerLoaderListener);
-        loaderManager.restartLoader(REVIEW_LOADER_ID, null, dataReviewLoaderListener);
-        mRecyclerViewAdapter.notifyDataSetChanged();
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "ON CREATE DETAIL FRAGMENT STARTED");
-        View view = inflater.inflate(R.layout.fragment_detail, container, false);
-
-        Bundle bundle = getActivity().getIntent().getExtras();
-        if (bundle != null) {
-            mMovie = bundle.getParcelable(PARCE_KEY);
-        }
-
-        mItems = new ArrayList<>();
-        mItems.add(mMovie);
-
-        Log.e(LOG_TAG, "Movie Id: " + mMovie.getId());
-        Log.e(LOG_TAG, "Passed MOVIE IS " + mMovie);
-
-        // Lookup the recyclerview in activity layout
-        RecyclerView recyclerViewMovie = (RecyclerView) view.findViewById(R.id.rvMovie);
-
-        // Create adapter passing in the sample user data
-        mRecyclerViewAdapter = new RecyclerViewAdapter(getActivity(), mItems);
-        // Attach the adapter to the recyclerview to populate items
-        recyclerViewMovie.setAdapter(mRecyclerViewAdapter);
-        // Set layout manager to position the items
-        recyclerViewMovie.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d(LOG_TAG, "onActivityCreated started");
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager)
                 getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -178,14 +142,35 @@ public class FragmentDetail extends Fragment {
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnected()) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
-            LoaderManager loaderManager = getActivity().getLoaderManager();
+            mLoaderManager = getLoaderManager();
 
             // Initialize the loader. Pass in the int ID constant defined above and pass in null for
             // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
             // because this activity implements the LoaderCallbacks interface).
-            loaderManager.initLoader(TRAILER_LOADER_ID, null, dataTrailerLoaderListener);
-            loaderManager.initLoader(REVIEW_LOADER_ID, null, dataReviewLoaderListener);
+            mLoaderManager.initLoader(TRAILER_LOADER_ID, null,dataTrailerLoaderListener);
         }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        Bundle bundle = getActivity().getIntent().getExtras();
+        if (bundle != null) {
+            mMovie = bundle.getParcelable(PARCE_KEY);
+        }
+        mItems = new ArrayList<>();
+        mItems.add(mMovie);
+
+        // Lookup the recyclerview in activity layout
+        RecyclerView recyclerViewMovie = (RecyclerView) view.findViewById(R.id.rvMovie);
+        // Set layout manager to position the items
+        recyclerViewMovie.setLayoutManager(new LinearLayoutManager(getActivity()));
+        // Create adapter passing in the sample user data
+        mRecyclerViewAdapter = new RecyclerViewAdapter(getActivity(), mItems);
+        // Attach the adapter to the recyclerview to populate items
+        recyclerViewMovie.setAdapter(mRecyclerViewAdapter);
         // That's all!
         return view;
     }

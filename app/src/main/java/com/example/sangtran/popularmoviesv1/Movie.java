@@ -14,7 +14,7 @@ public class Movie implements Parcelable {
     private String mOverview;
     private String mImagePath;
     private String mVoteAvg;
-    private Boolean mHasFavorite;
+    private int mHasFavorite;
 
     public Movie(String id, String title, String date, String overview, String imagePath, String voteAvg) {
         mId = id;
@@ -23,7 +23,7 @@ public class Movie implements Parcelable {
         mOverview = overview;
         mImagePath = imagePath;
         mVoteAvg = voteAvg;
-        mHasFavorite = false;
+        mHasFavorite = 0;
     }
 
     public String getId() {
@@ -74,12 +74,12 @@ public class Movie implements Parcelable {
         mVoteAvg = voteAvg;
     }
 
-    public Boolean getmHasFavorite() {
+    public int getHasFavorite() {
         return mHasFavorite;
     }
 
-    public void setmHasFavorite(Boolean mHasFavorite) {
-        this.mHasFavorite = mHasFavorite;
+    public void setHasFavorite(int hasFavorite) {
+        mHasFavorite = hasFavorite;
     }
 
     @Override
@@ -95,6 +95,8 @@ public class Movie implements Parcelable {
                 '}';
     }
 
+
+
     protected Movie(Parcel in) {
         mId = in.readString();
         mTitle = in.readString();
@@ -102,8 +104,7 @@ public class Movie implements Parcelable {
         mOverview = in.readString();
         mImagePath = in.readString();
         mVoteAvg = in.readString();
-        byte mHasFavoriteVal = in.readByte();
-        mHasFavorite = mHasFavoriteVal == 0x02 ? null : mHasFavoriteVal != 0x00;
+        mHasFavorite = in.readInt();
     }
 
     @Override
@@ -119,11 +120,7 @@ public class Movie implements Parcelable {
         dest.writeString(mOverview);
         dest.writeString(mImagePath);
         dest.writeString(mVoteAvg);
-        if (mHasFavorite == null) {
-            dest.writeByte((byte) (0x02));
-        } else {
-            dest.writeByte((byte) (mHasFavorite ? 0x01 : 0x00));
-        }
+        dest.writeInt(mHasFavorite);
     }
 
     @SuppressWarnings("unused")

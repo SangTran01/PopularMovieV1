@@ -2,6 +2,7 @@ package com.example.sangtran.popularmoviesv1;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ public class OverviewViewHolder extends RecyclerView.ViewHolder {
     private TextView mDate;
     private TextView mVoteAvg;
     private TextView mPlotSynopsis;
+    private Button mAddFavorite;
 
     public OverviewViewHolder(View itemView) {
         super(itemView);
@@ -24,6 +26,7 @@ public class OverviewViewHolder extends RecyclerView.ViewHolder {
         mDate = (TextView) itemView.findViewById(R.id.movie_date);
         mVoteAvg = (TextView) itemView.findViewById(R.id.movie_vote_average);
         mPlotSynopsis = (TextView) itemView.findViewById(R.id.movie_plot);
+        mAddFavorite = (Button) itemView.findViewById(R.id.movie_add_favorite_btn);
     }
 
     public TextView getMovieName() {
@@ -64,5 +67,13 @@ public class OverviewViewHolder extends RecyclerView.ViewHolder {
 
     public void setPlotSynopsis(TextView plotSynopsis) {
         mPlotSynopsis = plotSynopsis;
+    }
+
+    public Button getAddFavorite() {
+        return mAddFavorite;
+    }
+
+    public void setAddFavorite(Button addFavorite) {
+        mAddFavorite = addFavorite;
     }
 }

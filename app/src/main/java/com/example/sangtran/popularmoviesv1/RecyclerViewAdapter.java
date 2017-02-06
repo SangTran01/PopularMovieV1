@@ -1,27 +1,35 @@
 package com.example.sangtran.popularmoviesv1;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 import static java.security.AccessController.getContext;
 import static android.support.v4.content.ContextCompat.startActivity;
+
+import com.example.sangtran.popularmoviesv1.data.MovieContract.MovieEntry;
 
 /**
  * Created by Sang Tran on 2/2/2017.
  */
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private final String LOG_TAG = RecyclerViewAdapter.class.getSimpleName();
 
     private List<Object> items;
 
@@ -99,18 +107,83 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         switch (viewHolder.getItemViewType()) {
             case OVERVIEW:
-                OverviewViewHolder vh1 = (OverviewViewHolder) viewHolder;
-                Movie movie = (Movie) items.get(position);
+                final OverviewViewHolder vh1 = (OverviewViewHolder) viewHolder;
+                final Movie movie = (Movie) items.get(position);
                 vh1.getMovieName().setText(movie.getTitle());
 
                 //Picasso to easily load album art thumbnails into your views
                 //Picasso will handle loading the images on a background thread,
                 //image decompression and caching the images.
-                Picasso.with(mContext).load(movie.getImagePath()).into(vh1.getMoviePoster());
+                Picasso.with(mContext).load(movie.getImagePath()).resize(300,450).into(vh1.getMoviePoster());
 
                 vh1.getDate().setText(movie.getDate());
                 vh1.getVoteAvg().setText(movie.getVoteAvg());
                 vh1.getPlotSynopsis().setText(movie.getOverview());
+
+                int movieFavorited = 0;
+
+
+                Cursor cursor = mContext.getContentResolver().query(MovieEntry.CONTENT_URI,
+                        null,
+                        MovieEntry.COLUMN_MOVIE_ID + " =?",
+                        new String[]{movie.getId()}, null);
+
+                try {
+                    while (cursor.moveToNext()) {
+                        movieFavorited = cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_MOVIE_FAVORITE));
+                        Log.d(LOG_TAG, "HAS FAVORITE IN DB IS? " + movieFavorited);
+                    }
+                } finally {
+                    cursor.close();
+                }
+
+                if (movieFavorited == 1) {
+                    vh1.getAddFavorite().setText("Unfavorite \nMovie");
+                } else {
+                    vh1.getAddFavorite().setText("Favorite \nMovie");
+                }
+
+                final int finalMovieFavorited = movieFavorited;
+
+                vh1.getAddFavorite().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //set Favorite as true or 1 when clicked
+                        //check if favorite or not
+                        if (finalMovieFavorited == 0) {
+                            movie.setHasFavorite(1);
+
+                            ContentValues values = new ContentValues();
+                            values.put(MovieEntry.COLUMN_MOVIE_TITLE, movie.getTitle());
+                            values.put(MovieEntry.COLUMN_MOVIE_FAVORITE, movie.getHasFavorite());
+                            values.put(MovieEntry.COLUMN_MOVIE_VOTE_AVG, movie.getVoteAvg());
+                            values.put(MovieEntry.COLUMN_MOVIE_IMAGE, movie.getImagePath());
+                            values.put(MovieEntry.COLUMN_MOVIE_DATE, movie.getDate());
+                            values.put(MovieEntry.COLUMN_MOVIE_DESCRIPTION, movie.getOverview());
+                            values.put(MovieEntry.COLUMN_MOVIE_ID, movie.getId());
+
+                            Uri uri = mContext.getContentResolver().insert(
+                                    MovieEntry.CONTENT_URI, values);
+                            vh1.getAddFavorite().setText("Unfavorite \nMovie");
+
+                            Toast.makeText(mContext, "Movie favorited",
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+
+                            movie.setHasFavorite(0);
+                            int rowsDeleted = mContext.getContentResolver().delete(
+                                    MovieEntry.CONTENT_URI,
+                                    MovieEntry.COLUMN_MOVIE_ID + " =?",
+                                    new String[]{movie.getId()});
+
+                            if (rowsDeleted != 0) {
+                                vh1.getAddFavorite().setText("Favorite \nMovie");
+                                Toast.makeText(mContext, "Movie unfavorited", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
+
                 break;
             case TRAILER:
                 TrailerViewHolder vh2 = (TrailerViewHolder) viewHolder;

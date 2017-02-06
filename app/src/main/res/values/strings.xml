@@ -3,9 +3,16 @@
     <string name="action_settings_title">Settings</string>
     <string name="label_settings_activity">Settings</string>
     <string name="label_main_activity">MovieAppV1</string>
-    <string name="pref_movie_default">Popularity</string>
+    <string name="pref_movie_default">popular</string>
     <string name="pref_movie_dialog_title">Movies Sort Order</string>
     <string name="pref_movie_key">sortOrder</string>
     <string name="pref_movie_title">Sort Order</string>
     <string name="label_detail_activity">Movie Detail</string>
+    <string name="pref_favorite_title">Show Favorites</string>
+    <string name="pref_favorite_key">pref_favorite</string>
+    <string name="pref_favorite_default">false</string>
+    <string name="main_empty_label_no_movies">Hmm no movies, internet working?</string>
+    <string name="main_empty_label_check_internet">Have you checked your internet connection?</string>
+    <string name="empty_no_movies_found">Sorry! No movies were found :(</string>
+    <string name="empty_no_internet_connection">No internet connection available</string>
 </resources>
